@@ -1,0 +1,11 @@
+{
+  "name": "0820",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "yang <yangzq19931003@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+    "install": "^0.13.0",
+    "jest": "^24.9.0"
+  }
+}
