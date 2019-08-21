@@ -24,7 +24,7 @@ it ('should return receipt from database when call printReceipt by given the bar
 });
 
 // 输入可以为空
-let barcodeArray3 = ['0001', '', '', ''];
+let barcodeArray3 = ['0001', '', ''];
 it ('should return receipt from database when call printReceipt by given the barcodeArray', () => {
     expect(printReceipt(barcodeArray3)).toBe(
         "Receipts\n" +

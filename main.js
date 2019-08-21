@@ -50,23 +50,27 @@ function isValidInput(barcodeArray) {
     return inputNum === barcodeArray.length
 }
 
-
-function getReceipt (barcodeArray) {
-    let collection = [];
-    let receipt = [];
-    for (let i=0; i<barcodeArray.length; i++){
-        let keyValue = barcodeArray[i];
-        let countValue = 1;
-        for(let j=i+1; j<barcodeArray.length; j++){
-            if(barcodeArray[i]===barcodeArray[j]){
-                barcodeArray.splice(j,1);
-                j--;
-                countValue++;
-            }
+function getCollection(barcodeArray) {
+    let returnCollection = [];
+    let barcodeMap = new Map();
+    for(let i=0; i<barcodeArray.length; i++){
+        if(barcodeMap.get(barcodeArray[i])==null){
+            barcodeMap.set(barcodeArray[i],1);
+        }else {
+            barcodeMap.set(barcodeArray[i],barcodeMap.get(barcodeArray[i])+1);
         }
-        collection.push({id:keyValue, count:countValue});
     }
 
+    barcodeMap.forEach(function (value,key) {
+        returnCollection.push({id:key,count:value})
+    });
+
+    return returnCollection;
+}
+
+function getReceipt (barcodeArray) {
+    let collection = getCollection(barcodeArray);
+    let receipt = [];
     let totalMoney =0 ;
     for (let i=0; i<collection.length; i++){
         for (let j=0; j<database.length; j++){
@@ -84,8 +88,8 @@ function getReceipt (barcodeArray) {
     }
 
     receipt = "Receipts\n" +
-        "-----------------------------------\n"+
-        receipt+
+        "-----------------------------------\n" +
+        receipt +
         "-----------------------------------\n" +
         "Price:"+totalMoney;
 
