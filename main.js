@@ -98,7 +98,7 @@ function calculateTotal(products){
 function getOneInfo(barcodeObject) {
     let result = [];
     result+=barcodeObject.name;
-    for(let j=0;j< (20-barcodeObject.name.length);j++){result+=" ";}
+    for(let j=0;j<(32-barcodeObject.name.length);j++){result+=" ";}
     result+=barcodeObject.price+"          "+barcodeObject.count+"\n";
     return result;
 }
@@ -110,9 +110,9 @@ function generateReceipt(products, totalMoney){
     }
 
     receipt = "Receipts\n" +
-        "-----------------------------------\n" +
+        "------------------------------------------------------------\n" +
         receipt +
-        "-----------------------------------\n" +
+        "------------------------------------------------------------\n" +
         "Price:"+totalMoney;
 
     return receipt;
