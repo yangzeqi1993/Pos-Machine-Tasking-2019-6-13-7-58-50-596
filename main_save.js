@@ -16,10 +16,7 @@ function printReceipt (barcodeArray) {
     if(checkResult!=="Success"){
         return checkResult;
     }else{
-        let countItem = countItems(barcodeArray);
-        let products = getItems(countItem);
-        let totalMoney = calculateTotal(products);
-        return generateReceipt(products, totalMoney);
+        return getReceipt(barcodeArray);
     }
 }
 
@@ -52,47 +49,39 @@ function isValidInput(barcodeArray) {
     return inputNum === barcodeArray.length
 }
 
-function countItems(barcodeArray){
-    let result = [];
-    // barcodeArray.forEach( inputId => {
-    //     let index = result.findIndex(element => element.id === inputId);
-    //     if(index === -1){
-    //         result.push({id:inputId, count:1});
-    //     }else {
-    //         result[index].count++;
-    //     }
-    // });
-
-     barcodeArray.map( inputId => {
-        let index = result.findIndex(element => element.id === inputId);
-        if(index === -1){
-            result.push({id:inputId, count:1});
+function getCollection(barcodeArray) {
+    let returnCollection = [];
+    let barcodeMap = new Map();
+    for(let i=0; i<barcodeArray.length; i++){
+        if(barcodeMap.get(barcodeArray[i])==null){
+            barcodeMap.set(barcodeArray[i],1);
         }else {
-            result[index].count++;
+            barcodeMap.set(barcodeArray[i],barcodeMap.get(barcodeArray[i])+1);
         }
-     });
+    }
 
-    return result;
+    barcodeMap.forEach(function (value,key) {
+        returnCollection.push({id:key,count:value})
+    });
+
+    return returnCollection;
 }
 
-function getItems(countedItems){
-    let result = [];
-    for(let i=0; i<countedItems.length; i++){
-        for(let j=0; j<database.length; j++){
-            if(countedItems[i].id === database[j].id){
-                result.push({name:database[j].name, price:database[j].price, count: countedItems[i].count});
+function getInputInfo (barcodeArray) {
+    let collection = getCollection(barcodeArray);
+    let queryInfoArray = [];
+    for (let i=0; i<collection.length; i++){
+        for (let j=0; j<database.length; j++){
+            if(collection[i].id===database[j].id){
+                // 得到 sameObjectB 对象
+                let object = database.filter((p) => {
+                    return p.id === database[j].id;
+                });
+                queryInfoArray.push({name:object[0].name, price:object[0].price, count:collection[i].count});
             }
         }
     }
-    return result;
-}
-
-function calculateTotal(products){
-    let totalMoney = 0;
-    for(let i=0; i<products.length; i++){
-        totalMoney += products[i].price * products[i].count;
-    }
-    return totalMoney;
+    return queryInfoArray;
 }
 
 function getOneInfo(barcodeObject) {
@@ -103,10 +92,17 @@ function getOneInfo(barcodeObject) {
     return result;
 }
 
-function generateReceipt(products, totalMoney){
+function calculateTotal(barcodeObject) {
+    return barcodeObject.price*barcodeObject.count;
+}
+
+function getReceipt (barcodeArray) {
+    let queryInfoArray = getInputInfo(barcodeArray);
     let receipt = [];
-    for (let i=0; i<products.length; i++){
-        receipt += getOneInfo(products[i]);
+    let totalMoney =0 ;
+    for (let i=0; i<queryInfoArray.length; i++){
+        totalMoney += calculateTotal(queryInfoArray[i]);
+        receipt += getOneInfo(queryInfoArray[i]);
     }
 
     receipt = "Receipts\n" +
